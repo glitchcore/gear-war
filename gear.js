@@ -98,7 +98,7 @@ function Gear(painter, color, gridColor, i,j, convCb) {
       
       var result = true;
       observers.forEach(function(item, k, arr) { 
-	//console.log("[",i,":",j,"] push to ", k);
+	// console.log("[",i,":",j,"] push to ", k);
 	result &= item.push(-dAngle);
       });
       return result;

@@ -104,7 +104,24 @@ function start() {
   }
 
   painter = Painter(canvasMain, ctxMain);
+  
   var gears = Array();
+  gears.neighbour = function(i,j) { 
+    var arr = Array();
+    // console.log("neighbour", i,j);
+    gears.forEach(function(item,k,_){
+      // console.log("iterate", item);
+      if((Math.abs(item.i - i) == 1 && item.j == j) ||
+       (Math.abs(item.j - j) == 1 && item.i == i) ||
+       (item.i - i)*(item.j - j) == -1) { 
+	// console.log("neighbour", k, "found");
+	arr.push(item);
+	// console.log("arr", arr);
+      }
+    });
+    // console.log("neighbour", arr);
+    return arr;
+  }
   
   var color = "#ff0";
   
@@ -115,15 +132,11 @@ function start() {
 					      draw(x,y, 0.55/sizeX, angle);
 					    });
 					  });
-    gears.forEach(function(item,k,arr) {
+    
+    gears.neighbour(i,j).forEach(function(item,k,arr) {
       // console.log(i,j, "gear", item.i, item.j);
-      if((Math.abs(item.i - i) == 1 && item.j == j) ||
-	 (Math.abs(item.j - j) == 1 && item.i == i) ||
-	 (item.i - i)*(item.j - j) == -1) {
-	// console.log("neighbour", k, "found");
-	item.observe(gear);
-	gear.observe(item);
-      }
+      item.observe(gear);
+      gear.observe(item);
     });
       
     gears.push(gear);
@@ -146,7 +159,9 @@ function start() {
       if(item.i == i && item.j == j) {
 	// console.log("color", color, item.color);
 	if(item.color == color) {
-	  item.unobserve(i,j);
+	  gears.neighbour(i,j).forEach(function(item,k,arr) {
+	    item.unobserve(i,j);
+	  });
 	  gears.splice(k,1);
 	  // console.log("deleted");
 	}
@@ -178,8 +193,8 @@ function start() {
   }
   
   var counter = 0;
-  var speed1 = 0.01;
-  var speed2 = 0.03;
+  var speed1 = 0.02;
+  var speed2 = 0.02;
   
   filedUpdate();
   function update() { 
@@ -190,16 +205,16 @@ function start() {
       if(!gears[1].push(speed1)) {
 	speed1 = 0.001;
       } else {
-	speed1 = 0.03;
+	speed1 = 0.02;
       }
     } else {
       if(!gears[2].push(speed2)) {
 	speed2 = 0.001;
       } else {
-	speed2 = 0.03;
+	speed2 = 0.02;
       }
     }
-    // console.log("round clear");
+    // console.log("-------------------round clear");
   }
   
   setInterval(update, 30);
