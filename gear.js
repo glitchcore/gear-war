@@ -78,9 +78,13 @@ function Gear (painter, ctx, i,j, convCb) {
   return {
     push: function(dAngle) {
       // console.log("push[",i,":",j,"]: ", dAngle, "last: ", lastPush);
-      if(lastPush != "undefined" && lastPush != dAngle) {
-	// console.log("push fail");
-	return false;
+      if(lastPush != "undefined") {
+	if(lastPush != dAngle) {
+	  // console.log("push fail");
+	  return false; // conflict
+	} else {
+	  return true; // cycle
+	}
       }
       
       currentAngle += dAngle;
@@ -98,7 +102,7 @@ function Gear (painter, ctx, i,j, convCb) {
       convCb(i,j, currentAngle % 1,draw); 
       lastPush = "undefined";
     },
-    observe: function(observable) { observers.push(observable); }
+    observe: function(observable) { observers.push(observable); },
     i: i,
     j: j
   }
