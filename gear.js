@@ -1,7 +1,7 @@
 // Copyright (C) Ken Fyrstenberg / Epistemex
 // MIT license (header required)
 
-function Gear (painter, color,i,j, convCb) {
+function Gear(painter, color, gridColor, i,j, convCb) {
   
   var observers = Array();
   var lastPush = "undefined";
@@ -71,7 +71,7 @@ function Gear (painter, color,i,j, convCb) {
     painter.arc(x, y, radiusH, 0, pi2);
     painter.closePath();
 
-    painter.fill("#0f0");
+    painter.fill(gridColor);
 
     //painter.sourceOver();
     painter.stroke();
@@ -118,6 +118,7 @@ function Gear (painter, color,i,j, convCb) {
     i: i,
     j: j,
     zero: function() {  },
+    setColor: function(color) { _color = color; },
     color: _color
   }
     

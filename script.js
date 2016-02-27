@@ -36,11 +36,22 @@ function Painter(canvas, ctx) {
     ctx.arc(Math.round(x*canvas.width) + 0.5, Math.round(y*canvas.height) + 0.5, radius * J, start,stop);
   }
   
+  function circle(x,y,radius,color) {
+    ctx.beginPath();
+    // painter.destination();
+    
+    moveTo(x + radius, y);
+    arc(x, y, radius, 0, 2*Math.PI);
+    ctx.closePath();
+
+    fill(color);
+  }
     
   return {
     fillAll:fillAll,
     rect:rect,
     line:line,
+    circle:circle,
     lineTo: lineTo,
     moveTo: moveTo,
     arc: arc,
@@ -60,6 +71,10 @@ var sizeY = 15;
 var offsetX = 0.05;
 var offsetY = 0.08;
 
+var bgColor = "#FAFFFA";
+var gridColor = "#00F700";
+var firstColor = "#FF0000";
+var secondColor = "#0000FF";
 
 function affine(i,j,func) {
   var matrix = [[1,0.5],[0,1]];
@@ -95,7 +110,7 @@ function start() {
   
   function addGear(i,j, gears) {
     
-    var gear = Gear(painter, color, i, j, function(i,j, angle, draw) {
+    var gear = Gear(painter, color, gridColor, i, j, function(i,j, angle, draw) {
 					    affine(i, j, function(x,y){
 					      draw(x,y, 0.55/sizeX, angle);
 					    });
@@ -115,11 +130,11 @@ function start() {
     
     gears.forEach(function(item,i,arr){item.zero()});
     
-    if(color == "#ff0000") {
-      color = "#0000ff";
+    if(color == firstColor) {
+      color = secondColor;
       // console.log(color);
     } else {
-      color = "#ff0000";
+      color = firstColor;
     }
     return gear;
   }
@@ -129,9 +144,11 @@ function start() {
     gears.forEach(function(item,k,arr) {
       
       if(item.i == i && item.j == j) {
+	// console.log("color", color, item.color);
 	if(item.color == color) {
 	  item.unobserve(i,j);
 	  gears.splice(k,1);
+	  // console.log("deleted");
 	}
 	success = true;
       }
@@ -142,86 +159,42 @@ function start() {
   addGear(0,sizeY-1,gears);
   addGear(0,0,gears);
   addGear(sizeX-1,0,gears);
-  /*
-  addGear(2,2,gears);
-  addGear(2,3,gears);
-  addGear(2,4,gears);
-  addGear(2,5,gears);
-  addGear(3,0,gears);
-  addGear(4,0,gears);
-  addGear(5,0,gears);
-  addGear(6,0,gears);
-  addGear(6,1,gears);
-  addGear(6,2,gears);
-  addGear(5,3,gears);
-  addGear(4,4,gears);
-  addGear(3,5,gears);
-  addGear(1,6,gears);
-  // addGear(3,4,gears);
-  */
-  
-  // gears[0].observe(gears[2]);
    
+  var infoGear = Gear(painter, color, gridColor, 0, 0, function(i,j, angle,draw) {draw(0.1,0.9, 0.55/sizeX, 0);});
+  
   function filedUpdate() {
-    painter.fillAll("#FAFFFA");
-    //painter.line(0.2,0.2,0.6,0.6, "#000000");
-    //painter.rect(0.5,0.5,0.1,0.1, "#00F700");
+    painter.fillAll(bgColor);
     
     for(var i = 0; i < sizeX;i++) {
       for(var j = 0; j < sizeY;j++) {
 	if(i + j < (sizeX + sizeY)/2) {
-	  affine(i, j, function(x,y){painter.rect(x - 0.02/2,y - 0.02/2,0.02,0.02, "#00F700")});
+	  affine(i, j, function(x,y){painter.circle(x,y, 0.007, gridColor)});
 	}
       }
     }
     
-    painter.rect(0,0.9,0.1,0.1,color);
+    infoGear.setColor(color);
+    infoGear.clear();
   }
   
-  // affine(2, 1, function(x,y){painter.rect(x - 0.05/2,y - 0.05/2,0.05,0.05, "#FFFFFF")});
-  
-  //affine(3, 3, function(x,y){gear(x,y, 0.05, 0)});
-  //affine(4, 3, function(x,y){gear(x,y, 0.05, 0)});
-  
-  
-  // gear(0.5,0.2, 0.1, 0);
-  // gear(0.1,0.5, 0.05, 0);
-  // gear(0.5,0.7, 0.2, 0);
-  
-  /*
-  field = Field(painter, 200, 200);
-  field.setColor("#AAAAFF", "#669966", "#444433");
-  field.clear(0.4);
-  */
-  
-  // field.setColor("#AAAAFF", "#669966", "#FF0000");
-  // setTimeout(function() { field.update(); }, 1000);
-  filedUpdate(); 
-  
-  var refreshIntervalId;
-  
   var counter = 0;
-  
   var speed1 = 0.01;
   var speed2 = 0.03;
   
+  filedUpdate();
   function update() { 
     filedUpdate(); 
     gears.forEach(function(item,i,arr){item.clear()});
     counter++;
     if(counter % 50 < 25) {
       if(!gears[1].push(speed1)) {
-	speed1 = 0.005;
-	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
-	//clearInterval(refreshIntervalId);
+	speed1 = 0.001;
       } else {
 	speed1 = 0.03;
       }
     } else {
       if(!gears[2].push(speed2)) {
-	speed2 = 0.0005;
-	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
-	//clearInterval(refreshIntervalId);
+	speed2 = 0.001;
       } else {
 	speed2 = 0.03;
       }
@@ -229,26 +202,24 @@ function start() {
     // console.log("round clear");
   }
   
-  refreshIntervalId = setInterval(update, 30);
+  setInterval(update, 30);
   
   canvasMain.addEventListener('click', function(event) {
     
     var x = (event.pageX - canvasMain.offsetLeft - canvasMain.scrollLeft)/canvasMain.width,
         y = (event.pageY - canvasMain.offsetTop - canvasMain.scrollTop)/canvasMain.height;
-    console.log("click",x,y);
+    // console.log("click",x,y);
     
     points.forEach(function(iter,k,arr) {
       if((Math.abs(x - iter.x) < 0.3/sizeX) && (Math.abs(y - iter.y) < 0.3/sizeY)) {
 	console.log("at",iter.i,iter.j);
 	if(!removeGear(iter.i,iter.j)) {
-	  console.log("deleted");
+	  // console.log("not find");
 	  addGear(iter.i,iter.j,gears);
 	}
       }
     });
     
   }, false);
-  
-  // update();
 
 }
