@@ -118,7 +118,8 @@ function start() {
     gears.forEach(function(item,k,arr) {
       item.unobserve(i,j);
       if(item.i == i && item.j == j) {
-	gears.splice(k,1);
+	if(item.color == color)
+	  gears.splice(k,1);
 	success = true;
       }
     });
@@ -160,6 +161,8 @@ function start() {
 	}
       }
     }
+    
+    painter.rect(0,0.9,0.1,0.1,color);
   }
   
   // affine(2, 1, function(x,y){painter.rect(x - 0.05/2,y - 0.05/2,0.05,0.05, "#FFFFFF")});
@@ -186,19 +189,28 @@ function start() {
   
   var counter = 0;
   
+  var speed1 = 0.03;
+  var speed2 = 0.03;
+  
   function update() { 
     filedUpdate(); 
     gears.forEach(function(item,i,arr){item.clear()});
     counter++;
     if(counter % 50 < 25) {
-      if(!gears[1].push(-0.015)) {
-	alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
-	clearInterval(refreshIntervalId);
+      if(!gears[1].push(speed1)) {
+	speed1 = 0.001;
+	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
+	//clearInterval(refreshIntervalId);
+      } else {
+	speed1 = 0.03;
       }
     } else {
-      if(!gears[2].push(-0.03)) {
-	alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
-	clearInterval(refreshIntervalId);
+      if(!gears[2].push(speed2)) {
+	speed2 = 0.001;
+	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
+	//clearInterval(refreshIntervalId);
+      } else {
+	speed2 = 0.03;
       }
     }
     // console.log("round clear");
