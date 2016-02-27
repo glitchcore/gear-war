@@ -70,16 +70,22 @@ function start() {
   function addGear(i,j, gears) {
     var gear = Gear(painter, ctxMain, i, j, function(i,j, angle, draw) {
 					    affine(i, j, function(x,y){
-					      draw(x,y, 0.1, angle);
+					      draw(x,y, 0.06, angle);
 					    });
 					  });
     gears.push(gear);
+    /* find neighbour */
+    
     return gear;
   }
   
   addGear(2,2,gears);
   addGear(4,4,gears);
+  addGear(0,9,gears);
+  
   gears[0].observe(gears[1]);
+  gears[1].observe(gears[2]);
+  // gears[0].observe(gears[2]);
    
   function filedUpdate() {
     painter.fill("#EEEEEE");
@@ -113,12 +119,16 @@ function start() {
   
   // field.setColor("#AAAAFF", "#669966", "#FF0000");
   // setTimeout(function() { field.update(); }, 1000);
+  filedUpdate(); 
   
-  var angle = 0;
-  setInterval(function() { 
+  function update() { 
     filedUpdate(); 
-    gears[0].push(-0.01); 
+    console.log("rotate: ", gears[0].push(-0.02));
+    
     gears.forEach(function(item,i,arr){item.clear()});
-  }, 100);
+    // console.log("round clear");
+  }
+  setInterval(update, 100);
+  // update();
 
 }
