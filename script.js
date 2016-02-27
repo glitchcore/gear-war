@@ -1,7 +1,12 @@
 function Painter(canvas, ctx) {
-  function fill(color) {
+  function fillAll(color) {
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  function fill(color) {
+    ctx.fillStyle = color;
+    ctx.fill();
   }
   
   function rect(x1,y1,x,y, color) {
@@ -33,12 +38,18 @@ function Painter(canvas, ctx) {
   
     
   return {
-    fill:fill,
+    fillAll:fillAll,
     rect:rect,
     line:line,
     lineTo: lineTo,
     moveTo: moveTo,
-    arc: arc
+    arc: arc,
+    closePath: function() {ctx.closePath();},
+    stroke: function() {ctx.stroke();},
+    fill:fill,
+    beginPath: function() {ctx.beginPath();},
+    destination: function() {ctx.globalCompositeOperation = 'destination-out';},
+    sourceOver: function() {ctx.globalCompositeOperation = 'source-over';}
   };
   
 }
@@ -84,7 +95,7 @@ function start() {
   
   function addGear(i,j, gears) {
     
-    var gear = Gear(painter, ctxMain, color, i, j, function(i,j, angle, draw) {
+    var gear = Gear(painter, color, i, j, function(i,j, angle, draw) {
 					    affine(i, j, function(x,y){
 					      draw(x,y, 0.55/sizeX, angle);
 					    });
@@ -116,10 +127,12 @@ function start() {
   function removeGear(i,j) {
     var success = false;
     gears.forEach(function(item,k,arr) {
-      item.unobserve(i,j);
+      
       if(item.i == i && item.j == j) {
-	if(item.color == color)
+	if(item.color == color) {
+	  item.unobserve(i,j);
 	  gears.splice(k,1);
+	}
 	success = true;
       }
     });
@@ -150,7 +163,7 @@ function start() {
   // gears[0].observe(gears[2]);
    
   function filedUpdate() {
-    painter.fill("#FAFFFA");
+    painter.fillAll("#FAFFFA");
     //painter.line(0.2,0.2,0.6,0.6, "#000000");
     //painter.rect(0.5,0.5,0.1,0.1, "#00F700");
     
@@ -189,7 +202,7 @@ function start() {
   
   var counter = 0;
   
-  var speed1 = 0.03;
+  var speed1 = 0.01;
   var speed2 = 0.03;
   
   function update() { 
@@ -198,7 +211,7 @@ function start() {
     counter++;
     if(counter % 50 < 25) {
       if(!gears[1].push(speed1)) {
-	speed1 = 0.001;
+	speed1 = 0.005;
 	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
 	//clearInterval(refreshIntervalId);
       } else {
@@ -206,7 +219,7 @@ function start() {
       }
     } else {
       if(!gears[2].push(speed2)) {
-	speed2 = 0.001;
+	speed2 = 0.0005;
 	//alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
 	//clearInterval(refreshIntervalId);
       } else {

@@ -1,7 +1,7 @@
 // Copyright (C) Ken Fyrstenberg / Epistemex
 // MIT license (header required)
 
-function Gear (painter, ctx, color,i,j, convCb) {
+function Gear (painter, color,i,j, convCb) {
   
   var observers = Array();
   var lastPush = "undefined";
@@ -28,8 +28,9 @@ function Gear (painter, ctx, color,i,j, convCb) {
 	  taperAO = angle * taperO * 0.006; // outer taper offset
       
     // starting point
-    var a = 0;
-    painter.moveTo(x + radiusI * Math.cos(a + StartAngle - taperAI), y + radiusI * Math.sin(a + StartAngle - taperAI));
+    var a = angle;
+    painter.beginPath();
+    painter.moveTo(x + radiusO * Math.cos(a + StartAngle - taperAO), y + radiusO * Math.sin(a + StartAngle - taperAO));
 
     // loop
     for (a = angle; a <= pi2; a += angle) {
@@ -49,30 +50,32 @@ function Gear (painter, ctx, color,i,j, convCb) {
 	toggle = !toggle;
     }
 
-    // painter.lineTo(x + radiusI * Math.cos(a + StartAngle - taperAI), y + radiusI * Math.sin(a + StartAngle - taperAI));
+    //painter.lineTo(x + radiusI * Math.cos(a + StartAngle - taperAI), y + radiusI * Math.sin(a + StartAngle - taperAI));
     
     // close the final line
-    ctx.closePath();
+    painter.closePath();
 
-    ctx.fillStyle = _color;
-    ctx.fill();
+    painter.fill(_color);
 
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = '#000';
-    ctx.stroke();
+    painter.lineWidth = 2;
+    painter.strokeStyle = _color;
+    painter.stroke();
+
 
     // Punch hole in gear
-
-    ctx.beginPath();
-    ctx.globalCompositeOperation = 'destination-out';
+    
+    painter.beginPath();
+    // painter.destination();
+    
     painter.moveTo(x + radiusH, y);
     painter.arc(x, y, radiusH, 0, pi2);
-    ctx.closePath();
+    painter.closePath();
 
-    ctx.fill();
+    painter.fill("#0f0");
 
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.stroke();
+    //painter.sourceOver();
+    painter.stroke();
+    
   }
     
   
