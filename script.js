@@ -43,8 +43,8 @@ function Painter(canvas, ctx) {
   
 }
 
-var sizeX = 10;
-var sizeY = 10;
+var sizeX = 15;
+var sizeY = 15;
   
 var offsetX = 0.05;
 var offsetY = 0.08;
@@ -52,8 +52,8 @@ var offsetY = 0.08;
 
 function affine(i,j,func) {
   var matrix = [[1,0.5],[0,1]];
-  var x = i/(sizeX + 6*offsetX);
-  var y = j/(sizeY + 6*offsetY);
+  var x = i/(sizeX + 20*offsetX);
+  var y = j/(sizeY + 20*offsetY);
   
   var _x = x*matrix[0][0] + y*matrix[0][1] + offsetX;
   var _y = x*matrix[1][0] + y*matrix[1][1] + offsetY;
@@ -70,7 +70,7 @@ function start() {
     for(var j = 0; j < sizeY;j++) {
       if(i + j < (sizeX + sizeY)/2) {
 	affine(i, j, function(x,y){ 
-	  console.log(x,y);
+	  // console.log(x,y);
 	  points.push({x:x,y:y,i:i,j:j});
 	});
       }
@@ -80,10 +80,13 @@ function start() {
   painter = Painter(canvasMain, ctxMain);
   var gears = Array();
   
+  var color = "#ff0";
+  
   function addGear(i,j, gears) {
-    var gear = Gear(painter, ctxMain, i, j, function(i,j, angle, draw) {
+    
+    var gear = Gear(painter, ctxMain, color, i, j, function(i,j, angle, draw) {
 					    affine(i, j, function(x,y){
-					      draw(x,y, 0.06, angle);
+					      draw(x,y, 0.55/sizeX, angle);
 					    });
 					  });
     gears.forEach(function(item,k,arr) {
@@ -98,11 +101,33 @@ function start() {
     });
       
     gears.push(gear);
+    
+    gears.forEach(function(item,i,arr){item.zero()});
+    
+    if(color == "#ff0000") {
+      color = "#0000ff";
+      // console.log(color);
+    } else {
+      color = "#ff0000";
+    }
     return gear;
   }
   
+  function removeGear(i,j) {
+    var success = false;
+    gears.forEach(function(item,k,arr) {
+      item.unobserve(i,j);
+      if(item.i == i && item.j == j) {
+	gears.splice(k,1);
+	success = true;
+      }
+    });
+    return success;
+  }
 
+  addGear(0,sizeY-1,gears);
   addGear(0,0,gears);
+  addGear(sizeX-1,0,gears);
   /*
   addGear(2,2,gears);
   addGear(2,3,gears);
@@ -124,7 +149,7 @@ function start() {
   // gears[0].observe(gears[2]);
    
   function filedUpdate() {
-    painter.fill("#EEEEEE");
+    painter.fill("#FAFFFA");
     //painter.line(0.2,0.2,0.6,0.6, "#000000");
     //painter.rect(0.5,0.5,0.1,0.1, "#00F700");
     
@@ -159,17 +184,27 @@ function start() {
   
   var refreshIntervalId;
   
+  var counter = 0;
+  
   function update() { 
     filedUpdate(); 
     gears.forEach(function(item,i,arr){item.clear()});
-    if(!gears[0].push(-0.02)) {
-      alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
-      clearInterval(refreshIntervalId);
+    counter++;
+    if(counter % 50 < 25) {
+      if(!gears[1].push(-0.015)) {
+	alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
+	clearInterval(refreshIntervalId);
+      }
+    } else {
+      if(!gears[2].push(-0.03)) {
+	alert ("ГУМАНИТАРИЙ ШТОЛЕ?");
+	clearInterval(refreshIntervalId);
+      }
     }
     // console.log("round clear");
   }
   
-  refreshIntervalId = setInterval(update, 100);
+  refreshIntervalId = setInterval(update, 30);
   
   canvasMain.addEventListener('click', function(event) {
     
@@ -178,9 +213,12 @@ function start() {
     console.log("click",x,y);
     
     points.forEach(function(iter,k,arr) {
-      if((Math.abs(x - iter.x) < 0.05) && (Math.abs(y - iter.y) < 0.05)) {
+      if((Math.abs(x - iter.x) < 0.3/sizeX) && (Math.abs(y - iter.y) < 0.3/sizeY)) {
 	console.log("at",iter.i,iter.j);
-	addGear(iter.i,iter.j,gears);
+	if(!removeGear(iter.i,iter.j)) {
+	  console.log("deleted");
+	  addGear(iter.i,iter.j,gears);
+	}
       }
     });
     

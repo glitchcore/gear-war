@@ -1,10 +1,11 @@
 // Copyright (C) Ken Fyrstenberg / Epistemex
 // MIT license (header required)
 
-function Gear (painter, ctx, i,j, convCb) {
+function Gear (painter, ctx, color,i,j, convCb) {
   
   var observers = Array();
   var lastPush = "undefined";
+  var _color = color;
   
   var currentAngle = 0;
   
@@ -53,7 +54,7 @@ function Gear (painter, ctx, i,j, convCb) {
     // close the final line
     ctx.closePath();
 
-    ctx.fillStyle = '#aaa';
+    ctx.fillStyle = _color;
     ctx.fill();
 
     ctx.lineWidth = 2;
@@ -61,6 +62,7 @@ function Gear (painter, ctx, i,j, convCb) {
     ctx.stroke();
 
     // Punch hole in gear
+
     ctx.beginPath();
     ctx.globalCompositeOperation = 'destination-out';
     painter.moveTo(x + radiusH, y);
@@ -103,8 +105,17 @@ function Gear (painter, ctx, i,j, convCb) {
       lastPush = "undefined";
     },
     observe: function(observable) { observers.push(observable); },
+    unobserve: function(i,j) { 
+      observers.forEach(function(item, k, arr) { 
+	if (item.i == i && item.j == j) {
+	  observers.splice(k,1);
+	}
+      });
+    },
     i: i,
-    j: j
+    j: j,
+    zero: function() {  },
+    color: _color
   }
     
 }
