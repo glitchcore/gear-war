@@ -1,0 +1,46 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  
+  <script type="text/javascript" src="gear.js"></script>
+  <script type="text/javascript" src="script.js"></script>
+
+  <title>Gear war</title>
+  
+  <style type="text/css">
+   
+    .align_center {
+      position: relative;
+      width: 100%;
+    }
+    .align_center:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+    .align_center_to_left {
+      position: relative;
+      right: 50%;
+      float: right;
+    }
+    #main {
+      position: relative;
+      z-index: 1;
+      right: -50%;
+    }
+    
+  </style>
+  
+</head>
+
+
+<body onload="start()">
+  <div class="align_center">
+    <div class="align_center_to_left">
+      <canvas height='300' width='300' id = "main"/>
+    </div>
+  </div>
+</body>
+
+</html>
