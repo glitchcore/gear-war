@@ -71,10 +71,13 @@ var sizeY = 15;
 var offsetX = 0.05;
 var offsetY = 0.08;
 
-var bgColor = "#FAFFFA";
-var gridColor = "#00F700";
-var firstColor = "#FF0000";
-var secondColor = "#0000FF";
+var bgColor = "#DBFCAE";
+var gridColor = "#91F10C";
+var firstColor = "#E60C6B";
+var secondColor = "#661BCA";
+
+var highSpeed = 0.02
+var lowSpeed = 0.0003;
 
 function affine(i,j,func) {
   var matrix = [[1,0.5],[0,1]];
@@ -193,8 +196,8 @@ function start() {
   }
   
   var counter = 0;
-  var speed1 = 0.02;
-  var speed2 = 0.02;
+  var speed1 = highSpeed;
+  var speed2 = highSpeed;
   
   filedUpdate();
   function update() { 
@@ -203,15 +206,15 @@ function start() {
     counter++;
     if(counter % 50 < 25) {
       if(!gears[1].push(speed1)) {
-	speed1 = 0.001;
+	speed1 = lowSpeed;
       } else {
-	speed1 = 0.02;
+	speed1 = highSpeed;
       }
     } else {
       if(!gears[2].push(speed2)) {
-	speed2 = 0.001;
+	speed2 = lowSpeed;
       } else {
-	speed2 = 0.02;
+	speed2 = highSpeed;
       }
     }
     // console.log("-------------------round clear");
